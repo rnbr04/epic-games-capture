@@ -1,1 +1,1 @@
-web: gunicorn --config gunicorn.conf.py gettingstarted.wsgi
+web: gunicorn --config gunicorn.conf.py --chdir app site_settings.wsgi

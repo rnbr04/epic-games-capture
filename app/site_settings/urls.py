@@ -15,15 +15,10 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import patterns, include, path
+from django.urls import include, path
 from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('polls/', include("epic_games_free.urls")),
 ]
-
-if not settings.DEBUG:
-    urlpatterns += patterns('',
-        (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
-    )
