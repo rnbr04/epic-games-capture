@@ -20,5 +20,5 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('polls/', include("epic_games_free.urls")),
+    path('free_game/', include("epic_games_free.urls")),
 ]
