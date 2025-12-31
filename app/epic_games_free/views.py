@@ -1,16 +1,52 @@
 from django.http import HttpResponse, JsonResponse
 from epicstore_api import EpicGamesStoreAPI
+from .utils import get_product_link, is_bundle, get_key_image
 
 def index(request):
+    # create api object to handle api calls
     api = EpicGamesStoreAPI()
+    
+    # get all the free games
     free_games = api.get_free_games()
+    
+    # cleaning the get_free_games() request
     free_games_data = free_games.get('data')
     free_games_catalog = free_games_data.get('Catalog')
     free_games_search = free_games_catalog.get('searchStore')
     free_games_list = free_games_search.get('elements')
-    columns = ['title', 'description', 'effectiveDate', 'expiryDate', 'productSlug']
+
+    # filter out these columns
+    columns = ['title', 'description', 'expiryDate', 'productSlug', 'categories', 'keyImages']
+
+    # capture the actually free games by looking at
+    # their price and productSlug (if it even exists)
     actual_free_games = [{col: game.get(col) for col in columns} for game in free_games_list if game['price']['totalPrice']['discountPrice'] == 0 and 
                         game['productSlug'] != '[]']
-    for i in range(len(actual_free_games)):
-        games = {i: actual_free_games[i]}
+    
+    # create a clean JSON response with productLink
+    # and updated description in case of a bundle
+    for index, product in enumerate(actual_free_games):
+        
+        product_categories = product['categories']
+        
+        # check if the product is a bundle
+        product_is_bundle = is_bundle(product_categories)
+        
+        # get the page link accordingly
+        product['productLink'] = get_product_link(product['productSlug'], type_bundle=product_is_bundle)
+        
+        # get wide image
+        product['keyImages'] = get_key_image(product['keyImages']) 
+
+        # update the description in case of a bundle
+        if product_is_bundle:
+            bundle_info = api.get_bundle(product['productSlug'])
+            bundle_description = bundle_info['data']['about']['shortDescription']
+            product['description'] = bundle_description
+        
+        # delete unrequired keys
+        del product['categories']
+        games = {index: product}
+    
+    # return JSON
     return JsonResponse(games)
