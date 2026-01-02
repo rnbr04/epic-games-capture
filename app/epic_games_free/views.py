@@ -32,9 +32,9 @@ def index(request):
     # their price and productSlug (if it even exists)
     actual_free_games = [{col: game.get(col) for col in columns} for game in free_games_list if game['price']['totalPrice']['discountPrice'] == 0 and 
                         game['productSlug'] != '[]']
-    
     # create a clean JSON response with productLink
     # and updated description in case of a bundle
+    games = {}
     for index, product in enumerate(actual_free_games):
         
         product_categories = product['categories']
@@ -56,10 +56,10 @@ def index(request):
         
         # delete unrequired keys
         del product['categories']
-        games = {index: product}
+        games[index] = product
     for idx, game in games.items():
-        g = CurrentOffer(**game)
-        g.save()
-
+        if not CurrentOffer.objects.filter(productSlug = game['productSlug']):
+            g = CurrentOffer(**game)
+            g.save()
     # return JSON
     return JsonResponse(games)
