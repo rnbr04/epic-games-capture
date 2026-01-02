@@ -1,6 +1,7 @@
 from django.http import HttpResponse, JsonResponse
 from epicstore_api import EpicGamesStoreAPI
 from .utils import get_product_link, is_bundle, get_key_image
+from .models import CurrentOffer
 
 def index(request):
     # create api object to handle api calls
@@ -47,6 +48,9 @@ def index(request):
         # delete unrequired keys
         del product['categories']
         games = {index: product}
-    
+    for idx, game in games.items():
+        g = CurrentOffer(**game)
+        g.save()
+
     # return JSON
     return JsonResponse(games)
