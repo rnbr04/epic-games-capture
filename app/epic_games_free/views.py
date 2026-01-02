@@ -3,6 +3,15 @@ from epicstore_api import EpicGamesStoreAPI
 from .utils import get_product_link, is_bundle, get_key_image
 from .models import CurrentOffer
 
+# add authentication to the main view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def index(request):
     # create api object to handle api calls
     api = EpicGamesStoreAPI()

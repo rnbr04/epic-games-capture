@@ -37,6 +37,16 @@ SECRET_KEY = os.environ.get(
     default=secrets.token_urlsafe(nbytes=64),
 )
 
+# Django Rest Framework to protect api
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+}
+
 # Django has a debug mode which shows more detailed error messages and also means static assets
 # can be served without having to run the production `collectstatic` command. However, this
 # debug mode *must only be enabled in development* for security and performance reasons:
@@ -92,7 +102,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'epic_games_free.apps.EpicGamesFreeConfig'
+    'epic_games_free.apps.EpicGamesFreeConfig',
+    'rest_framework',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
