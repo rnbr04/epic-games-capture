@@ -8,6 +8,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import status
 
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
@@ -56,10 +57,10 @@ def index(request):
         
         # delete unrequired keys
         del product['categories']
-        games[index] = product
-    for idx, game in games.items():
-        if not CurrentOffer.objects.filter(productSlug = game['productSlug']):
-            g = CurrentOffer(**game)
+
+        # commit the product into database if not present 
+        if not CurrentOffer.objects.filter(productSlug = product['productSlug']):
+            g = CurrentOffer(**product)
             g.save()
-    # return JSON
-    return JsonResponse(games)
+    # return OK
+    return Response(status=status.HTTP_200_OK)
