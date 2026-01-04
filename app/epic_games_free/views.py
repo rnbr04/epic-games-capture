@@ -65,7 +65,7 @@ def index(request):
         if not CurrentOffer.objects.filter(productSlug = product['productSlug']):
             g = CurrentOffer(**product)
             g.save()
-            send_webhook(webhook_url = os.environ.get("WEBHOOK_URL"),
+            send_webhook(webhook_url = os.getenv("WEBHOOK_URL"),
                          game_title = product["title"],
                          game_expiry_date = f"<t:{int(datetime.fromisoformat(product["expiryDate"]).timestamp())}>",
                          game_url = product["productLink"],
