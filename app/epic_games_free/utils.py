@@ -11,7 +11,7 @@ def is_bundle(categories):
 def get_key_image(keyImages):
     return [image['url'] for image in keyImages if image['type'] == 'OfferImageWide'][0]
 
-def send_webhook(webhook_url, username, avatar_url, game_title, game_expiry_date, game_url, game_description, game_image):
+def send_webhook(webhook_url, game_title, game_expiry_date, game_url, game_description, game_image):
     payload = {
         "embeds": [
             {
