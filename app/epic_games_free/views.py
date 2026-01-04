@@ -1,6 +1,9 @@
+import os
+from datetime import datetime
+
 from django.http import HttpResponse, JsonResponse
 from epicstore_api import EpicGamesStoreAPI
-from .utils import get_product_link, is_bundle, get_key_image
+from .utils import get_product_link, is_bundle, get_key_image, send_webhook
 from .models import CurrentOffer
 
 # add authentication to the main view
@@ -62,5 +65,11 @@ def index(request):
         if not CurrentOffer.objects.filter(productSlug = product['productSlug']):
             g = CurrentOffer(**product)
             g.save()
+            send_webhook(webhook_url = os.environ.get("WEBHOOK_URL"),
+                         game_title = product["title"],
+                         game_expiry_date = f"<t:{int(datetime.fromisoformat(product["expiryDate"]).timestamp())}>",
+                         game_url = product["productLink"],
+                         game_description = product["description"],
+                         game_image = product["keyImages"])
     # return OK
     return Response(status=status.HTTP_200_OK)
